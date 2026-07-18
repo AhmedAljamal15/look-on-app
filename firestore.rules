@@ -1,0 +1,19 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Each user (anonymous UID) can only read/write their own subtree.
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+      match /profilePhotos/{photoId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+
+      match /tryOnHistory/{resultId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+  }
+}
