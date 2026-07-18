@@ -27,6 +27,11 @@ jobs:
           echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> .env
           echo "SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}" >> .env
 
+      - name: Create firebase_options.dart from secret
+        run: |
+          mkdir -p lib
+          echo "${{ secrets.FIREBASE_OPTIONS_DART }}" | base64 --decode > lib/firebase_options.dart
+
       - name: Install dependencies
         run: flutter pub get
 
@@ -61,6 +66,11 @@ jobs:
           echo "FAL_API_KEY=${{ secrets.FAL_API_KEY }}" >> .env
           echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> .env
           echo "SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}" >> .env
+
+      - name: Create firebase_options.dart from secret
+        run: |
+          mkdir -p lib
+          echo "${{ secrets.FIREBASE_OPTIONS_DART }}" | base64 --decode > lib/firebase_options.dart
 
       - name: Install dependencies
         run: flutter pub get
