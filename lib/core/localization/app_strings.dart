@@ -51,10 +51,8 @@ class AppLocalizations {
       'try_it_on_me': 'جرّبها عليّ',
 
       // تلميحات الفئات المختلفة
-      'capture_hint_tops':
-          'صوّر القميص أو الجاكيت من الأمام بإضاءة جيدة',
-      'capture_hint_bottoms':
-          'صوّر البنطلون أو التنورة من الأمام بإضاءة جيدة',
+      'capture_hint_tops': 'صوّر القميص أو الجاكيت من الأمام بإضاءة جيدة',
+      'capture_hint_bottoms': 'صوّر البنطلون أو التنورة من الأمام بإضاءة جيدة',
       'capture_hint_one_pieces':
           'صوّر الفستان أو البدلة كاملاً من الأمام بإضاءة جيدة',
 
@@ -97,8 +95,7 @@ class AppLocalizations {
       'history_title': 'المحاولات السابقة',
       'history_fetch_error': 'تعذّر تحميل المحاولات السابقة',
       'history_empty_title': 'لا توجد محاولات بعد',
-      'history_empty_subtitle':
-          'كل ملبس تجرّبه سيُحفظ هنا لترجع إليه متى شئت',
+      'history_empty_subtitle': 'كل ملبس تجرّبه سيُحفظ هنا لترجع إليه متى شئت',
       'capture_first_shirt': 'جرّب أول ملبس',
       'delete_attempt_title': 'حذف هذه المحاولة؟',
       'delete_attempt_body': 'لن تتمكن من استعادتها بعد الحذف',
@@ -108,8 +105,7 @@ class AppLocalizations {
       'filter_all': 'الكل',
       'filter_favorites': 'المفضلة',
       'favorites_empty_title': 'لا توجد عناصر في المفضلة بعد',
-      'favorites_empty_subtitle':
-          'اضغط على القلب في أي نتيجة لحفظها هنا',
+      'favorites_empty_subtitle': 'اضغط على القلب في أي نتيجة لحفظها هنا',
 
       // ---------- صورة البروفايل ----------
       'profile_photo_title': 'صورتك الشخصية',
@@ -142,6 +138,14 @@ class AppLocalizations {
       'preferred_garment': 'الملبس المفضل',
       'select_gender_title': 'اختر الجنس',
 
+      'complete_your_setup': 'كمّل إعدادك',
+      'preferences_hint':
+          'تساعد بياناتك الذكاءَ الاصطناعيَّ على تركيب الملابس عليك بدقة',
+      'i_am_label': 'أنا',
+      'usually_wear_label': 'عادةً ما أرتدي',
+      'category_one_pieces_short': 'كاملة',
+      'lets_go_short': 'لنبدأ',
+
       // ---------- الإعدادات ----------
       'change_profile_photo': 'تغيير صورتك الشخصية',
       'add_profile_photo': 'إضافة صورة شخصية',
@@ -169,8 +173,7 @@ class AppLocalizations {
       'onboard_1_subtitle':
           'لا حاجة لأخذ الملبس ودخول غرفة القياس، فقط التقط صورة لما يعجبك بالكاميرا.',
       'onboard_2_title': 'الذكاء الاصطناعي يريك كيف تبدو به',
-      'onboard_2_subtitle':
-          'في ثوانٍ، سترى نفسك ترتدي الملبس قبل شرائه.',
+      'onboard_2_subtitle': 'في ثوانٍ، سترى نفسك ترتدي الملبس قبل شرائه.',
       'onboard_3_title': 'وقتك أثمن من الانتظار',
       'onboard_3_subtitle': 'اتخذ قرارك بسرعة، ووفّر وقتك أثناء التسوق.',
       'lets_start': 'لنبدأ',
@@ -184,8 +187,7 @@ class AppLocalizations {
       'agree': 'أوافق',
       'welcome_bullet_1': 'التقط صورة أي ملبس في أي متجر في ثوانٍ',
       'welcome_bullet_2': 'الذكاء الاصطناعي يريك كيف يبدو عليك فوراً',
-      'welcome_bullet_3':
-          'جميع محاولاتك محفوظة يمكنك مراجعتها في أي وقت',
+      'welcome_bullet_3': 'جميع محاولاتك محفوظة يمكنك مراجعتها في أي وقت',
       'lets_go': 'هيا بنا! 🎉',
       'enjoy_app': 'استمتع بالتطبيق',
 
@@ -215,16 +217,13 @@ class AppLocalizations {
       'image_unclear_error':
           'هذه الصورة غير واضحة بما يكفي، حاول الالتقاط مجدداً.',
       'image_temp_save_error': 'حدث خطأ أثناء الحفظ المؤقت للصورة.',
-      'image_process_error':
-          'حدث خطأ أثناء معالجة الصورة، حاول مجدداً.',
+      'image_process_error': 'حدث خطأ أثناء معالجة الصورة، حاول مجدداً.',
       'storage_upload_failed': 'فشل رفع الصورة: {error}',
       'ai_no_image_returned': 'لم يعُد النموذج بصورة، حاول مجدداً',
       'ai_no_url_in_response': 'لا يوجد رابط صورة في الاستجابة',
       'ai_server_connect_failed': 'فشل الاتصال بخادم الذكاء الاصطناعي',
-      'ai_auth_error':
-          'توجد مشكلة في إعدادات الخدمة، حاول مجدداً بعد قليل',
-      'ai_rate_limit':
-          'الخدمة مشغولة حالياً، انتظر قليلاً وأعد المحاولة',
+      'ai_auth_error': 'توجد مشكلة في إعدادات الخدمة، حاول مجدداً بعد قليل',
+      'ai_rate_limit': 'الخدمة مشغولة حالياً، انتظر قليلاً وأعد المحاولة',
       'ai_bad_image':
           'الصورة غير واضحة بما يكفي للذكاء الاصطناعي، جرّب صورة أخرى بإضاءة أفضل',
       'ai_timeout': 'استغرق الطلب وقتاً أطول من المتوقع، حاول مجدداً',
@@ -238,8 +237,7 @@ class AppLocalizations {
       'permission_failure': 'نحتاج إلى إذن الكاميرا أو المعرض للمتابعة.',
       'cache_failure': 'تعذّر حفظ البيانات على الجهاز.',
       'unknown_failure': 'حدث خطأ غير متوقع.',
-      'splash_session_error':
-          'تعذّر بدء الجلسة، تحقق من اتصالك بالإنترنت.',
+      'splash_session_error': 'تعذّر بدء الجلسة، تحقق من اتصالك بالإنترنت.',
       'daily_limit_reached':
           'لقد وصلت إلى الحد الأقصى للمحاولات المجانية اليومية ({n})، حاول مجدداً غداً',
       'attempts_remaining_today': 'تبقّى لك {n} محاولات اليوم',
@@ -323,8 +321,7 @@ class AppLocalizations {
       'filter_all': 'All',
       'filter_favorites': 'Favorites',
       'favorites_empty_title': 'No favorites yet',
-      'favorites_empty_subtitle':
-          'Tap the heart on any result to save it here',
+      'favorites_empty_subtitle': 'Tap the heart on any result to save it here',
 
       // ---------- Profile photo ----------
       'profile_photo_title': 'Your profile photo',
@@ -364,6 +361,14 @@ class AppLocalizations {
       'gender_female': 'Female',
       'preferred_garment': 'Preferred garment',
       'select_gender_title': 'Select gender',
+
+      'complete_your_setup': 'Complete your setup',
+      'preferences_hint':
+          'Your details help the AI fit garments on you accurately',
+      'i_am_label': 'I am',
+      'usually_wear_label': 'I usually wear',
+      'category_one_pieces_short': 'Full',
+      'lets_go_short': "Let's start",
 
       // ---------- Settings ----------
       'change_profile_photo': 'Change your profile photo',

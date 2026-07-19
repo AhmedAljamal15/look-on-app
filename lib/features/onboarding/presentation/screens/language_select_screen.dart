@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/localization/locale_provider.dart';
+import '../../../../core/localization/app_strings.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -22,7 +23,6 @@ class LanguageSelectScreen extends ConsumerStatefulWidget {
 }
 
 class _LanguageSelectScreenState extends ConsumerState<LanguageSelectScreen> {
-  // Step 1 = language, Step 2 = gender + category
   int _step = 1;
   String _gender = 'male';
   String _category = 'tops';
@@ -39,11 +39,9 @@ class _LanguageSelectScreenState extends ConsumerState<LanguageSelectScreen> {
     if (_saving) return;
     setState(() => _saving = true);
 
-    // حفظ اللغة
     await ref.read(languageChoiceLocalSourceProvider).markChosen();
     ref.read(languageChosenProvider.notifier).state = true;
 
-    // حفظ الجنس والـ category — دول بيانات حقيقية بتأثر على الـ AI
     await ref.read(preferencesLocalSourceProvider).save(
           gender: _gender,
           defaultCategory: _category,
@@ -63,11 +61,11 @@ class _LanguageSelectScreenState extends ConsumerState<LanguageSelectScreen> {
         child: AnimatedSwitcher(
           duration: const Duration(milliseconds: 350),
           child: _step == 1
-              ? _LanguageStep(
+              ? LanguageStep(
                   key: const ValueKey('lang'),
                   onChoose: _confirmLanguage,
                 )
-              : _PreferencesStep(
+              : PreferencesStep(
                   key: const ValueKey('prefs'),
                   gender: _gender,
                   category: _category,
@@ -85,10 +83,10 @@ class _LanguageSelectScreenState extends ConsumerState<LanguageSelectScreen> {
 // ─────────────────────────────────────────────
 // الخطوة 1: اختيار اللغة
 // ─────────────────────────────────────────────
-class _LanguageStep extends StatelessWidget {
+class LanguageStep extends StatelessWidget {
   final ValueChanged<Locale> onChoose;
 
-  const _LanguageStep({super.key, required this.onChoose});
+  const LanguageStep({super.key, required this.onChoose});
 
   @override
   Widget build(BuildContext context) {
@@ -102,23 +100,19 @@ class _LanguageStep extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Spacer(),
-          ResponsiveSizedBox(
+          const ResponsiveSizedBox(
             mobileWidth: 80,
             mobileHeight: 80,
             tabletWidth: 120,
             tabletHeight: 120,
             desktopWidth: 150,
             desktopHeight: 150,
-            child: const AppLogo(fontSize: 40),
+            child: AppLogo(fontSize: 40),
           ).animate().fadeIn(duration: 400.ms),
           SizedBox(
-            height: context.responsiveGap(
-              mobile: 8,
-              tablet: 12,
-              desktop: 16,
-            ),
+            height: context.responsiveGap(mobile: 8, tablet: 12, desktop: 16),
           ),
-          ResponsiveText(
+          const ResponsiveText(
             'Choose your language  ·  اختار لغتك',
             textAlign: TextAlign.center,
             mobileFontSize: 14,
@@ -127,26 +121,20 @@ class _LanguageStep extends StatelessWidget {
             color: AppColors.textTertiary,
           ).animate().fadeIn(delay: 120.ms),
           SizedBox(
-            height: context.responsiveGap(
-              mobile: 32,
-              tablet: 48,
-              desktop: 64,
-            ),
+            height:
+                context.responsiveGap(mobile: 32, tablet: 48, desktop: 64),
           ),
-          _LanguageCard(
+          LanguageCard(
             label: 'العربية',
             subLabel: 'Arabic',
             icon: Icons.translate_rounded,
             onTap: () => onChoose(const Locale('ar')),
           ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.08, end: 0),
           SizedBox(
-            height: context.responsiveGap(
-              mobile: 12,
-              tablet: 16,
-              desktop: 20,
-            ),
+            height:
+                context.responsiveGap(mobile: 12, tablet: 16, desktop: 20),
           ),
-          _LanguageCard(
+          LanguageCard(
             label: 'English',
             subLabel: 'الإنجليزية',
             icon: Icons.language_rounded,
@@ -162,7 +150,7 @@ class _LanguageStep extends StatelessWidget {
 // ─────────────────────────────────────────────
 // الخطوة 2: اختيار الجنس والـ category
 // ─────────────────────────────────────────────
-class _PreferencesStep extends StatelessWidget {
+class PreferencesStep extends StatelessWidget {
   final String gender;
   final String category;
   final bool saving;
@@ -170,7 +158,7 @@ class _PreferencesStep extends StatelessWidget {
   final ValueChanged<String> onCategoryChanged;
   final VoidCallback onFinish;
 
-  const _PreferencesStep({
+  const PreferencesStep({
     super.key,
     required this.gender,
     required this.category,
@@ -195,13 +183,10 @@ class _PreferencesStep extends StatelessWidget {
           children: [
             SizedBox(
               height: context.responsiveGap(
-                mobile: 20,
-                tablet: 32,
-                desktop: 40,
-              ),
+                  mobile: 20, tablet: 32, desktop: 40),
             ),
             ResponsiveText(
-              'كمّل إعدادك',
+              context.tr('complete_your_setup'),
               mobileFontSize: 28,
               tabletFontSize: 32,
               desktopFontSize: 36,
@@ -209,14 +194,11 @@ class _PreferencesStep extends StatelessWidget {
               textAlign: TextAlign.center,
             ).animate().fadeIn(),
             SizedBox(
-              height: context.responsiveGap(
-                mobile: 8,
-                tablet: 12,
-                desktop: 16,
-              ),
+              height:
+                  context.responsiveGap(mobile: 8, tablet: 12, desktop: 16),
             ),
             ResponsiveText(
-              'بياناتك دي بتساعد الـ AI يركّب الملابس صح عليك',
+              context.tr('preferences_hint'),
               mobileFontSize: 14,
               tabletFontSize: 16,
               desktopFontSize: 18,
@@ -225,33 +207,27 @@ class _PreferencesStep extends StatelessWidget {
             ).animate().fadeIn(delay: 80.ms),
             SizedBox(
               height: context.responsiveGap(
-                mobile: 24,
-                tablet: 32,
-                desktop: 40,
-              ),
+                  mobile: 24, tablet: 32, desktop: 40),
             ),
 
             // ── اختيار الجنس ──
             ResponsiveText(
-              'أنا',
+              context.tr('i_am_label'),
               mobileFontSize: 16,
               tabletFontSize: 18,
               desktopFontSize: 20,
               fontWeight: FontWeight.bold,
             ).animate().fadeIn(delay: 140.ms),
             SizedBox(
-              height: context.responsiveGap(
-                mobile: 8,
-                tablet: 12,
-                desktop: 16,
-              ),
+              height:
+                  context.responsiveGap(mobile: 8, tablet: 12, desktop: 16),
             ),
             Row(
               children: [
                 Expanded(
-                  child: _SelectionCard(
+                  child: SelectionCard(
                     icon: Icons.man_rounded,
-                    label: 'رجل',
+                    label: context.tr('gender_male'),
                     subLabel: 'Male',
                     isSelected: gender == 'male',
                     onTap: () => onGenderChanged('male'),
@@ -259,15 +235,12 @@ class _PreferencesStep extends StatelessWidget {
                 ),
                 SizedBox(
                   width: context.responsiveGap(
-                    mobile: 8,
-                    tablet: 12,
-                    desktop: 16,
-                  ),
+                      mobile: 8, tablet: 12, desktop: 16),
                 ),
                 Expanded(
-                  child: _SelectionCard(
+                  child: SelectionCard(
                     icon: Icons.woman_rounded,
-                    label: 'امرأة',
+                    label: context.tr('gender_female'),
                     subLabel: 'Female',
                     isSelected: gender == 'female',
                     onTap: () => onGenderChanged('female'),
@@ -277,26 +250,20 @@ class _PreferencesStep extends StatelessWidget {
             ).animate().fadeIn(delay: 180.ms).slideY(begin: 0.05, end: 0),
             SizedBox(
               height: context.responsiveGap(
-                mobile: 24,
-                tablet: 32,
-                desktop: 40,
-              ),
+                  mobile: 24, tablet: 32, desktop: 40),
             ),
 
             // ── اختيار الـ category المفضلة ──
             ResponsiveText(
-              'بصوّر عادةً',
+              context.tr('usually_wear_label'),
               mobileFontSize: 16,
               tabletFontSize: 18,
               desktopFontSize: 20,
               fontWeight: FontWeight.bold,
             ).animate().fadeIn(delay: 240.ms),
             SizedBox(
-              height: context.responsiveGap(
-                mobile: 8,
-                tablet: 12,
-                desktop: 16,
-              ),
+              height:
+                  context.responsiveGap(mobile: 8, tablet: 12, desktop: 16),
             ),
             ResponsiveGridView(
               itemCount: 3,
@@ -306,15 +273,9 @@ class _PreferencesStep extends StatelessWidget {
               tabletColumns: 3,
               desktopColumns: 3,
               mainAxisSpacing: context.responsiveGap(
-                mobile: 8,
-                tablet: 12,
-                desktop: 16,
-              ),
+                  mobile: 8, tablet: 12, desktop: 16),
               crossAxisSpacing: context.responsiveGap(
-                mobile: 8,
-                tablet: 12,
-                desktop: 16,
-              ),
+                  mobile: 8, tablet: 12, desktop: 16),
               itemBuilder: (context, index) {
                 const categories = ['tops', 'bottoms', 'one-pieces'];
                 const icons = [
@@ -322,14 +283,18 @@ class _PreferencesStep extends StatelessWidget {
                   Icons.accessibility_new_rounded,
                   Icons.dry_cleaning_rounded,
                 ];
-                const labels = ['علوي', 'سفلي', 'كاملة'];
-                const subLabels = [
-                  'قمصان / تيشرتات',
-                  'بناطيل / تنانير',
-                  'فساتين'
+                final labels = [
+                  context.tr('category_tops'),
+                  context.tr('category_bottoms'),
+                  context.tr('category_one_pieces_short'),
+                ];
+                final subLabels = [
+                  context.tr('category_tops_sub'),
+                  context.tr('category_bottoms_sub'),
+                  context.tr('category_one_pieces_sub'),
                 ];
 
-                return _SelectionCard(
+                return SelectionCard(
                   icon: icons[index],
                   label: labels[index],
                   subLabel: subLabels[index],
@@ -341,10 +306,7 @@ class _PreferencesStep extends StatelessWidget {
 
             SizedBox(
               height: context.responsiveGap(
-                mobile: 24,
-                tablet: 32,
-                desktop: 40,
-              ),
+                  mobile: 24, tablet: 32, desktop: 40),
             ),
 
             ResponsiveSizedBox(
@@ -352,7 +314,7 @@ class _PreferencesStep extends StatelessWidget {
               tabletHeight: 48,
               desktopHeight: 52,
               child: PrimaryButton(
-                label: 'يلا نبدأ',
+                label: context.tr('lets_go_short'),
                 isLoading: saving,
                 onPressed: onFinish,
               ),
@@ -360,10 +322,7 @@ class _PreferencesStep extends StatelessWidget {
 
             SizedBox(
               height: context.responsiveGap(
-                mobile: 12,
-                tablet: 16,
-                desktop: 20,
-              ),
+                  mobile: 12, tablet: 16, desktop: 20),
             ),
           ],
         ),
@@ -375,14 +334,15 @@ class _PreferencesStep extends StatelessWidget {
 // ─────────────────────────────────────────────
 // كارت اختيار عام (جنس أو category)
 // ─────────────────────────────────────────────
-class _SelectionCard extends StatelessWidget {
+class SelectionCard extends StatelessWidget {
   final IconData icon;
   final String label;
   final String subLabel;
   final bool isSelected;
   final VoidCallback onTap;
 
-  const _SelectionCard({
+  const SelectionCard({
+    super.key,
     required this.icon,
     required this.label,
     required this.subLabel,
@@ -398,16 +358,10 @@ class _SelectionCard extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeOut,
         padding: EdgeInsets.symmetric(
-          vertical: context.responsiveDimension(
-            mobile: 12,
-            tablet: 16,
-            desktop: 20,
-          ),
-          horizontal: context.responsiveDimension(
-            mobile: 8,
-            tablet: 10,
-            desktop: 12,
-          ),
+          vertical:
+              context.responsiveDimension(mobile: 12, tablet: 16, desktop: 20),
+          horizontal:
+              context.responsiveDimension(mobile: 8, tablet: 10, desktop: 12),
         ),
         decoration: BoxDecoration(
           gradient: isSelected ? AppColors.primaryGradient : null,
@@ -432,18 +386,12 @@ class _SelectionCard extends StatelessWidget {
             Icon(
               icon,
               size: context.responsiveDimension(
-                mobile: 24,
-                tablet: 28,
-                desktop: 32,
-              ),
+                  mobile: 24, tablet: 28, desktop: 32),
               color: isSelected ? Colors.white : AppColors.textTertiary,
             ),
             SizedBox(
-              height: context.responsiveGap(
-                mobile: 6,
-                tablet: 8,
-                desktop: 10,
-              ),
+              height:
+                  context.responsiveGap(mobile: 6, tablet: 8, desktop: 10),
             ),
             ResponsiveText(
               label,
@@ -455,11 +403,8 @@ class _SelectionCard extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             SizedBox(
-              height: context.responsiveGap(
-                mobile: 2,
-                tablet: 3,
-                desktop: 4,
-              ),
+              height:
+                  context.responsiveGap(mobile: 2, tablet: 3, desktop: 4),
             ),
             ResponsiveText(
               subLabel,
@@ -481,15 +426,16 @@ class _SelectionCard extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────
-// Language Card - Responsive Version
+// Language Card
 // ─────────────────────────────────────────────
-class _LanguageCard extends StatelessWidget {
+class LanguageCard extends StatelessWidget {
   final String label;
   final String subLabel;
   final IconData icon;
   final VoidCallback onTap;
 
-  const _LanguageCard({
+  const LanguageCard({
+    super.key,
     required this.label,
     required this.subLabel,
     required this.icon,
@@ -498,11 +444,8 @@ class _LanguageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final iconSize = context.responsiveDimension(
-      mobile: 44,
-      tablet: 52,
-      desktop: 60,
-    );
+    final iconSize =
+        context.responsiveDimension(mobile: 44, tablet: 52, desktop: 60);
 
     return Material(
       color: AppColors.inkElevated,
@@ -514,15 +457,9 @@ class _LanguageCard extends StatelessWidget {
           width: double.infinity,
           padding: EdgeInsets.symmetric(
             horizontal: context.responsiveDimension(
-              mobile: 16,
-              tablet: 24,
-              desktop: 32,
-            ),
+                mobile: 16, tablet: 24, desktop: 32),
             vertical: context.responsiveDimension(
-              mobile: 16,
-              tablet: 20,
-              desktop: 24,
-            ),
+                mobile: 16, tablet: 20, desktop: 24),
           ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppRadius.lg),
@@ -546,19 +483,13 @@ class _LanguageCard extends StatelessWidget {
                     icon,
                     color: Colors.white,
                     size: context.responsiveDimension(
-                      mobile: 20,
-                      tablet: 24,
-                      desktop: 28,
-                    ),
+                        mobile: 20, tablet: 24, desktop: 28),
                   ),
                 ),
               ),
               SizedBox(
                 width: context.responsiveGap(
-                  mobile: 16,
-                  tablet: 20,
-                  desktop: 24,
-                ),
+                    mobile: 16, tablet: 20, desktop: 24),
               ),
               Expanded(
                 child: Column(
@@ -573,10 +504,7 @@ class _LanguageCard extends StatelessWidget {
                     ),
                     SizedBox(
                       height: context.responsiveGap(
-                        mobile: 2,
-                        tablet: 4,
-                        desktop: 6,
-                      ),
+                          mobile: 2, tablet: 4, desktop: 6),
                     ),
                     ResponsiveText(
                       subLabel,
@@ -591,10 +519,7 @@ class _LanguageCard extends StatelessWidget {
               Icon(
                 Icons.arrow_forward_ios_rounded,
                 size: context.responsiveDimension(
-                  mobile: 16,
-                  tablet: 18,
-                  desktop: 20,
-                ),
+                    mobile: 16, tablet: 18, desktop: 20),
                 color: AppColors.textTertiary,
               ),
             ],
