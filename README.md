@@ -1,171 +1,180 @@
-# FitSnap — تطبيق تجربة الملابس بالـ AI
+# LookOn
 
-تطبيق Flutter كامل: المستخدم يصوّر أي قميص في أي محل، والـ AI بيوريله شكله عليه فورًا — من غير ما يدخل غرفة القياس.
+**AI-powered virtual try-on mobile app.** Snap a photo of any garment in a store, and instantly see how it looks on you — no fitting room required.
+
+<p align="center">
+  <img src="screenshots/01_splash.jpg" width="200"/>
+  <img src="screenshots/06_home_en.jpg" width="200"/>
+  <img src="screenshots/08_capture_garment.jpg" width="200"/>
+</p>
 
 ---
 
-## 📁 هيكلة المشروع
+## What it does
 
-```
+1. User takes a one-time profile photo.
+2. User photographs any garment in-store (top, bottom, or full-body piece).
+3. AI generates a realistic composite showing the user wearing that exact garment.
+4. Result is saved to history and can be favorited or shared.
+
+---
+
+## Features
+
+- **AI Virtual Try-On** — powered by FASHN.ai (via fal.ai), supports tops, bottoms, and full-body garments (dresses, jumpsuits)
+- **System-language auto-detection** — app opens in Arabic if the device is set to Arabic, English otherwise; user can override manually at any time
+- **Full Arabic (MSA) & English support** — complete RTL/LTR layout handling across every screen
+- **One-time onboarding** — language, gender, and preferred garment type are set once and reused across the app to improve AI accuracy
+- **Favorites & history** — every try-on is saved; users can favorite and revisit past results
+- **Body measurements (optional)** — height, weight, chest, waist, shoulder width, and preferred size for more accurate AI fitting
+- **Daily usage limits** — cost-conscious rate limiting on AI generations per user per day
+- **Offline detection** — real-time banner shown across the app when the connection drops
+- **Custom design system** — Coffee Cream visual identity with animated gradients, shimmer effects, and micro-interactions throughout
+- **Consent-first onboarding** — explicit terms & privacy acceptance flow before any photo is stored
+
+---
+
+## Tech Stack
+
+
+|
+ Layer 
+|
+ Technology 
+|
+|
+---
+|
+---
+|
+|
+ Framework 
+|
+ Flutter (Dart) 
+|
+|
+ State Management 
+|
+ Riverpod 
+|
+|
+ Backend / Auth 
+|
+ Firebase (Anonymous Auth, Firestore) 
+|
+|
+ Image Storage 
+|
+ Supabase Storage 
+|
+|
+ AI Provider 
+|
+ FASHN.ai (via fal.ai) 
+|
+|
+ Routing 
+|
+ go_router 
+|
+|
+ Localization 
+|
+ Custom i18n system (Arabic/English) 
+|
+|
+ CI/CD 
+|
+ GitHub Actions (automated analysis, testing, APK builds) 
+|
+
+---
+
+## Architecture
+
+Feature-first Clean Architecture — each feature is self-contained with clear separation of concerns:
+
 lib/
-├── core/                          # كل حاجة مشتركة بين الفيتشرز
-│   ├── constants/                 # ثوابت التطبيق (أسماء collections, limits...)
-│   ├── errors/                    # Failure (للـ UI) + Exception (للـ data layer)
-│   ├── providers/                 # DI الأساسي (auth/storage/AI services)
-│   ├── router/                    # go_router + منطق الـ redirect
-│   ├── services/                  # Auth, Storage, AI, Image (Firebase wrappers)
-│   ├── theme/                     # ألوان، خطوط، spacing، الـ ThemeData كامل
-│   └── widgets/                   # عناصر UI مشتركة (أزرار، error/empty states)
+├── core/ # Shared infrastructure
+│ ├── constants/
+│ ├── errors/ # Failure (UI-facing) + Exception (data-layer) types
+│ ├── localization/ # i18n strings and locale controller
+│ ├── providers/ # App-wide DI (auth, storage, AI services)
+│ ├── router/ # go_router config + auth-aware redirects
+│ ├── theme/ # Colors, typography, spacing tokens
+│ └── widgets/ # Shared UI (buttons, banners, animations)
 │
 ├── features/
-│   ├── onboarding/                # شاشات التعريف بالتطبيق (3 صفحات)
-│   ├── home/                      # الشاشة الرئيسية
-│   ├── profile_photo/             # تصوير وحفظ صورة المستخدم (مرة واحدة)
-│   ├── try_on/                    # تصوير القميص + شاشة "بنركّب عليك"
-│   ├── result/                    # عرض نتيجة الـ AI
-│   ├── history/                   # كل المحاولات السابقة
-│   └── settings/                  # الإعدادات
+│ ├── onboarding/ # Welcome flow, consent, language detection
+│ ├── home/ # Main dashboard
+│ ├── profile_photo/ # One-time profile photo capture
+│ ├── try_on/ # Garment capture + AI generation flow
+│ ├── result/ # AI result display, sharing, favoriting
+│ ├── history/ # Past attempts, favorites filter
+│ ├── measurements/ # Optional body measurements
+│ ├── user_profile/ # Account settings, preferences
+│ └── preferences/ # Gender & garment-type preferences
 │
-└── main.dart                      # نقطة الدخول
+└── main.dart
 
-functions/                         # Firebase Cloud Functions (TypeScript)
-└── src/index.ts                   # الدالة اللي بتكلم fal.ai (AI try-on)
-```
 
-كل فيتشر مقسّم لـ `presentation` (شاشات + widgets) / `application` (Riverpod providers) / `data` (repositories) / `domain` (الـ models) — مفصولين عشان لو غيرت الـ backend أو الـ AI provider بكرة، مش هتلمس شاشة واحدة.
-
----
-
-## 🧠 إزاي شغال الـ AI Try-On (المعمارية اللي اتفقنا عليها)
-
-```
-المستخدم يصوّر القميص
-        │
-        ▼
-  رفع الصورة على Firebase Storage
-        │
-        ▼
-  استدعاء Cloud Function (generateTryOn)
-        │
-        ▼
-  الـ Function بتكلم fal.ai (موديل IDM-VTON)
-        │
-        ▼
-  ترجع رابط الصورة الناتجة
-        │
-        ▼
-  تتسجل في Firestore (history) وتتعرض للمستخدم
-```
-
-**ليه الـ Cloud Function في النص ومش الـ app بيكلم fal.ai على طول؟**
-عشان API key بتاع fal.ai متسربش جوه التطبيق نفسه (أي حد يقدر يفك الـ APK ويلاقيه). الـ Function هي المكان الوحيد اللي فيه المفتاح.
+Each feature follows:
+- `presentation/` — screens (UI only) + widgets
+- `application/` — Riverpod providers/notifiers (business logic)
+- `data/` — repositories, data sources
+- `domain/` — models, entities, enums
 
 ---
 
-## ⚙️ خطوات التشغيل
+## Screenshots
 
-### 1. تثبيت الـ dependencies
+### Onboarding & Setup
 
-```bash
-flutter pub get
-```
+<p align="center">
+  <img src="screenshots/02_onboarding_ar.jpg" width="200"/>
+  <img src="screenshots/04_language_select.jpg" width="200"/>
+  <img src="screenshots/05_setup_preferences.jpg" width="200"/>
+</p>
 
-### 2. ربط Firebase
+### Home (Arabic & English)
 
-```bash
-# لو مش متثبت
-dart pub global activate flutterfire_cli
+<p align="center">
+  <img src="screenshots/07_home_ar.jpg" width="200"/>
+  <img src="screenshots/06_home_en.jpg" width="200"/>
+</p>
 
-# من جوه فولدر المشروع
-flutterfire configure
-```
+### Try-On Flow
 
-ده هيعمل ملف `lib/firebase_options.dart` تلقائي. بعدها رجّع السطرين دول في `lib/main.dart`:
+<p align="center">
+  <img src="screenshots/08_capture_garment.jpg" width="200"/>
+  <img src="screenshots/09_generating.jpg" width="200"/>
+</p>
 
-```dart
-import 'firebase_options.dart';
-import 'package:firebase_core/firebase_core.dart';
-// ...
-await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-```
+### History & Measurements
 
-في Firebase Console، فعّل:
-- **Authentication → Sign-in method → Anonymous** ✅ (هو ده أساس فكرة "بدون تسجيل دخول")
-- **Firestore Database** (Production mode)
-- **Storage**
+<p align="center">
+  <img src="screenshots/10_history_empty.jpg" width="200"/>
+  <img src="screenshots/11_measurements.jpg" width="200"/>
+</p>
 
-### 3. نشر الـ Firestore/Storage rules
+### Profile (Arabic & English)
 
-```bash
-firebase deploy --only firestore:rules,storage
-```
-
-### 4. إعداد الـ AI (fal.ai)
-
-1. اعمل حساب على [fal.ai](https://fal.ai) واخد API key.
-2. سجّله كـ secret في Firebase:
-
-```bash
-firebase functions:secrets:set FAL_KEY
-```
-
-3. ابني وانشر الـ function:
-
-```bash
-cd functions
-npm install
-npm run build
-firebase deploy --only functions
-```
-
-### 5. شغّل التطبيق
-
-```bash
-flutter run
-```
+<p align="center">
+  <img src="screenshots/12_profile_ar.jpg" width="200"/>
+  <img src="screenshots/13_profile_en.jpg" width="200"/>
+</p>
 
 ---
 
-## 🎨 الهوية البصرية
+## CI/CD
 
-اخترت هوية مش الألوان التقليدية لتطبيقات التسوق (أزرق/بنفسجي مكرر). الفكرة: خلفية **ink** غامقة (زي مراية غرفة قياس بالليل) + لون **coral/terracotta** كأكسنت (بيوحي بخيط الحياكة وشريط القياس). الخط: **Poppins** للعناوين (واثق وهندسي) + **Inter** للنصوص (وضوح عالي).
-
-كل التوكنز (الألوان، الـ spacing، الـ radius) مركزّة في `lib/core/theme/` — تقدر تغيّر اللون الأساسي من مكان واحد (`app_colors.dart`) وهيتغيّر في التطبيق كله.
-
----
-
-## 🧩 إزاي الـ State Management شغال (Riverpod)
-
-- **Services** (`core/services`): wrappers حول Firebase SDKs، مفيهاش state.
-- **Repositories** (`*/data`): بترجع `Either<Failure, T>` (مكتبة `fpdart`) بدل ما ترمي exceptions — يعني أي شاشة لازم تتعامل مع الخطأ بشكل صريح، مفيش مفاجآت.
-- **Notifiers** (`*/application`): `AsyncNotifier` بيدير حالة التحميل/الخطأ/النجاح لكل action (حفظ صورة، توليد try-on...).
-- **Streams** زي `activeProfilePhotoProvider` و`historyProvider` بيفضلوا "حيين" (مش `autoDispose`) عشان الداتا متتقرأش من جديد كل ما تنقل بين الشاشات.
-
-مثال على flow كامل:
-```
-الشاشة تستدعي ref.read(tryOnGenerationProvider.notifier).generate(file)
-        → الـ Notifier يحول الـ state لـ Loading
-        → يكلم TryOnRepository
-        → الـ Repository يرفع الصورة + يكلم Cloud Function + يحفظ في Firestore
-        → يرجع Either<Failure, TryOnResult>
-        → الـ Notifier يحول الـ state لـ Data أو Error
-        → الشاشة تستجيب تلقائيًا (تنقل لشاشة النتيجة أو تعرض رسالة خطأ)
-```
+Every push to `main` triggers a GitHub Actions pipeline that:
+1. Installs dependencies and analyzes the codebase (`flutter analyze`)
+2. Runs the test suite
+3. Builds a release APK and uploads it as a workflow artifact
 
 ---
 
-## 📝 حاجات لسه ناقصة عشان الإنتاج (Production checklist)
+## Author
 
-- [ ] أيقونة التطبيق + splash screen أصلية (دلوقتي بسيطة بـ Icon)
-- [ ] صور/Lottie حقيقية بدل الـ placeholders في `assets/`
-- [ ] اختبار حقيقي لجودة موديل fal.ai على صور محلات مختلفة (إضاءة، خلفيات)
-- [ ] Rate limiting على الـ Cloud Function (منع استخدام مفرط)
-- [ ] صفحة "الشروط والأحكام" + توضيح إن الصور بتتحفظ على Firebase
-- [ ] اختبار على أجهزة iOS فعلية (خصوصًا الكاميرا والصلاحيات)
-- [ ] لو حبيت تربط حساب حقيقي اختياريًا بعدين: أضف Google/Apple Sign-In كـ "ترقية" فوق الـ anonymous auth الحالي (Firebase بيدعم `linkWithCredential` للحفاظ على نفس الـ UID والداتا)
-
----
-
-## 💰 ملاحظة على التكلفة
-
-كل صورة try-on = استدعاء واحد لموديل fal.ai (مدفوع بالاستخدام). راجع التسعير الحالي على fal.ai قبل الإطلاق وفكر في حد أقصى يومي لكل مستخدم لو حبيت تتحكم في التكلفة.
+**Ahmed Aljamal** — [github.com/AhmedAljamal15](https://github.com/AhmedAljamal15)
