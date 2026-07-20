@@ -1,3 +1,4 @@
+import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -38,7 +39,10 @@ Future<void> main() async {
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
       ],
-      child: const FitSnapApp(),
+      child: DevicePreview(
+        enabled: false,
+        builder: (context) => const FitSnapApp(),
+      ),
     ),
   );
 }
@@ -56,7 +60,7 @@ class FitSnapApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.dark,
       themeMode: ThemeMode.light,
-      locale: locale,
+      locale: DevicePreview.locale(context) ?? locale,
       supportedLocales: const [
         Locale('ar'),
         Locale('en'),
@@ -68,32 +72,37 @@ class FitSnapApp extends ConsumerWidget {
       ],
       routerConfig: router,
       builder: (context, child) {
-        final mq = MediaQuery.of(context);
+        return DevicePreview.appBuilder(
+          context,
+          Builder(
+            builder: (context) {
+              final mq = MediaQuery.of(context);
 
-        return DecoratedBox(
-          decoration: const BoxDecoration(
-            gradient: AppColors.appBackgroundGradient,
-          ),
-          child: MediaQuery(
-            data: mq.copyWith(
-              textScaler: mq.textScaler.clamp(
-                minScaleFactor: 0.9,
-                maxScaleFactor: 1.2,
-              ),
-            ),
-            child: Stack(
-              children: [
-                child!,
-                // الـ Banner فوق كل حاجة، بيظهر تلقائياً في أي شاشة
-                // في التطبيق لما النت يقطع، ويختفي لما يرجع.
-                const Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  child: NoInternetBanner(),
+              return DecoratedBox(
+                decoration: const BoxDecoration(
+                  gradient: AppColors.appBackgroundGradient,
                 ),
-              ],
-            ),
+                child: MediaQuery(
+                  data: mq.copyWith(
+                    textScaler: mq.textScaler.clamp(
+                      minScaleFactor: 0.9,
+                      maxScaleFactor: 1.2,
+                    ),
+                  ),
+                  child: Stack(
+                    children: [
+                      child ?? const SizedBox.shrink(),
+                      const Positioned(
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        child: NoInternetBanner(),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
           ),
         );
       },
