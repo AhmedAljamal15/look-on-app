@@ -1,128 +1,143 @@
+<div align="center">
+
 # LookOn
 
-**AI-powered virtual try-on mobile app.** Snap a photo of any garment in a store, and instantly see how it looks on you — no fitting room required.
+### AI-Powered Virtual Try-On
 
-<p align="center">
-  <img src="screenshots/01_splash.jpg" width="200"/>
-  <img src="screenshots/06_home_en.jpg" width="200"/>
-  <img src="screenshots/08_capture_garment.jpg" width="200"/>
+Take a photo of any garment and instantly visualize how it looks on you — without entering a fitting room.
+
+<br>
+
+[![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?style=flat-square\&logo=flutter\&logoColor=white)](https://flutter.dev)
+[![Dart](https://img.shields.io/badge/Dart-3.x-0175C2?style=flat-square\&logo=dart\&logoColor=white)](https://dart.dev)
+[![Firebase](https://img.shields.io/badge/Firebase-Backend-FFCA28?style=flat-square\&logo=firebase\&logoColor=black)](https://firebase.google.com)
+[![Riverpod](https://img.shields.io/badge/State-Riverpod-6B57FF?style=flat-square)](https://riverpod.dev)
+[![GitHub Actions](https://img.shields.io/badge/CI%2FCD-GitHub_Actions-2088FF?style=flat-square\&logo=githubactions\&logoColor=white)](https://github.com/features/actions)
+
+<br>
+
+<p>
+  <img src="screenshots/01_splash.jpeg" width="210" alt="LookOn splash screen"/>
+  &nbsp;
+  <img src="screenshots/06_home_en.jpeg" width="210" alt="LookOn English home screen"/>
+  &nbsp;
+  <img src="screenshots/08_capture_garment.jpeg" width="210" alt="LookOn garment capture screen"/>
 </p>
+
+<br>
+
+**Capture. Generate. Try it on virtually.**
+
+</div>
 
 ---
 
-## What it does
+## What It Does
 
-1. User takes a one-time profile photo.
-2. User photographs any garment in-store (top, bottom, or full-body piece).
-3. AI generates a realistic composite showing the user wearing that exact garment.
-4. Result is saved to history and can be favorited or shared.
+LookOn transforms the in-store clothing experience into a fast virtual try-on workflow.
+
+1. The user captures a one-time profile photo.
+2. The user photographs a garment, including tops, bottoms, dresses, or full-body pieces.
+3. AI generates a realistic result showing the user wearing the selected garment.
+4. The generated image is saved and can be revisited, favorited, or shared.
 
 ---
 
 ## Features
 
-- **AI Virtual Try-On** — powered by FASHN.ai (via fal.ai), supports tops, bottoms, and full-body garments (dresses, jumpsuits)
-- **System-language auto-detection** — app opens in Arabic if the device is set to Arabic, English otherwise; user can override manually at any time
-- **Full Arabic (MSA) & English support** — complete RTL/LTR layout handling across every screen
-- **One-time onboarding** — language, gender, and preferred garment type are set once and reused across the app to improve AI accuracy
-- **Favorites & history** — every try-on is saved; users can favorite and revisit past results
-- **Body measurements (optional)** — height, weight, chest, waist, shoulder width, and preferred size for more accurate AI fitting
-- **Daily usage limits** — cost-conscious rate limiting on AI generations per user per day
-- **Offline detection** — real-time banner shown across the app when the connection drops
-- **Custom design system** — Coffee Cream visual identity with animated gradients, shimmer effects, and micro-interactions throughout
-- **Consent-first onboarding** — explicit terms & privacy acceptance flow before any photo is stored
+| Feature                             | Description                                                                                       |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------- |
+| **AI Virtual Try-On**               | Generates realistic clothing previews using FASHN.ai through fal.ai.                              |
+| **Multiple Garment Categories**     | Supports tops, bottoms, dresses, jumpsuits, and other full-body garments.                         |
+| **Automatic Language Detection**    | Opens in Arabic when the device language is Arabic and in English otherwise.                      |
+| **Arabic and English Localization** | Complete RTL and LTR support across the entire application.                                       |
+| **One-Time Onboarding**             | Saves language, gender, and garment preferences for future sessions.                              |
+| **Favorites and History**           | Stores generated results and allows users to mark preferred items as favorites.                   |
+| **Optional Measurements**           | Supports height, weight, chest, waist, shoulder width, and preferred clothing size.               |
+| **Daily Usage Limits**              | Controls AI generation usage per user to manage service costs.                                    |
+| **Offline Detection**               | Displays a global real-time banner whenever the internet connection is lost.                      |
+| **Custom Design System**            | Uses a Coffee Cream identity with gradients, shimmer effects, animations, and micro-interactions. |
+| **Consent-First Experience**        | Requires explicit terms and privacy acceptance before storing user photos.                        |
 
 ---
 
 ## Tech Stack
 
-
-|
- Layer 
-|
- Technology 
-|
-|
----
-|
----
-|
-|
- Framework 
-|
- Flutter (Dart) 
-|
-|
- State Management 
-|
- Riverpod 
-|
-|
- Backend / Auth 
-|
- Firebase (Anonymous Auth, Firestore) 
-|
-|
- Image Storage 
-|
- Supabase Storage 
-|
-|
- AI Provider 
-|
- FASHN.ai (via fal.ai) 
-|
-|
- Routing 
-|
- go_router 
-|
-|
- Localization 
-|
- Custom i18n system (Arabic/English) 
-|
-|
- CI/CD 
-|
- GitHub Actions (automated analysis, testing, APK builds) 
-|
+| Layer                | Technology                            |
+| -------------------- | ------------------------------------- |
+| **Framework**        | Flutter and Dart                      |
+| **State Management** | Riverpod                              |
+| **Backend**          | Firebase                              |
+| **Authentication**   | Firebase Anonymous Authentication     |
+| **Database**         | Cloud Firestore                       |
+| **Image Storage**    | Supabase Storage                      |
+| **AI Provider**      | FASHN.ai through fal.ai               |
+| **Routing**          | go_router                             |
+| **Localization**     | Custom Arabic and English i18n system |
+| **CI/CD**            | GitHub Actions                        |
 
 ---
 
 ## Architecture
 
-Feature-first Clean Architecture — each feature is self-contained with clear separation of concerns:
+LookOn follows a **feature-first Clean Architecture** approach.
 
+Each feature is isolated and organized into presentation, application, data, and domain layers. Shared infrastructure is placed inside the `core` directory.
+
+```text
 lib/
-├── core/ # Shared infrastructure
-│ ├── constants/
-│ ├── errors/ # Failure (UI-facing) + Exception (data-layer) types
-│ ├── localization/ # i18n strings and locale controller
-│ ├── providers/ # App-wide DI (auth, storage, AI services)
-│ ├── router/ # go_router config + auth-aware redirects
-│ ├── theme/ # Colors, typography, spacing tokens
-│ └── widgets/ # Shared UI (buttons, banners, animations)
+├── core/
+│   ├── constants/
+│   ├── errors/
+│   ├── localization/
+│   ├── providers/
+│   ├── router/
+│   ├── services/
+│   ├── theme/
+│   └── widgets/
 │
 ├── features/
-│ ├── onboarding/ # Welcome flow, consent, language detection
-│ ├── home/ # Main dashboard
-│ ├── profile_photo/ # One-time profile photo capture
-│ ├── try_on/ # Garment capture + AI generation flow
-│ ├── result/ # AI result display, sharing, favoriting
-│ ├── history/ # Past attempts, favorites filter
-│ ├── measurements/ # Optional body measurements
-│ ├── user_profile/ # Account settings, preferences
-│ └── preferences/ # Gender & garment-type preferences
+│   ├── onboarding/
+│   ├── home/
+│   ├── profile_photo/
+│   ├── try_on/
+│   ├── result/
+│   ├── history/
+│   ├── measurements/
+│   ├── user_profile/
+│   └── preferences/
 │
 └── main.dart
+```
 
+### Feature Structure
 
-Each feature follows:
-- `presentation/` — screens (UI only) + widgets
-- `application/` — Riverpod providers/notifiers (business logic)
-- `data/` — repositories, data sources
-- `domain/` — models, entities, enums
+```text
+feature/
+├── presentation/
+│   ├── screens/
+│   └── widgets/
+│
+├── application/
+│   ├── providers/
+│   └── notifiers/
+│
+├── data/
+│   ├── repositories/
+│   └── data_sources/
+│
+└── domain/
+    ├── models/
+    ├── entities/
+    └── enums/
+```
+
+| Layer           | Responsibility                                       |
+| --------------- | ---------------------------------------------------- |
+| `presentation/` | Screens, reusable widgets, and user interface logic  |
+| `application/`  | Riverpod providers, notifiers, and business logic    |
+| `data/`         | Repository implementations and external data sources |
+| `domain/`       | Models, entities, enums, and repository contracts    |
 
 ---
 
@@ -131,50 +146,96 @@ Each feature follows:
 ### Onboarding & Setup
 
 <p align="center">
-  <img src="screenshots/02_onboarding_ar.jpg" width="200"/>
-  <img src="screenshots/04_language_select.jpg" width="200"/>
-  <img src="screenshots/05_setup_preferences.jpg" width="200"/>
+  <img src="screenshots/02_onboarding_ar.jpeg" width="210" alt="Arabic onboarding screen"/>
+  &nbsp;
+  <img src="screenshots/04_language_select.jpeg" width="210" alt="Language selection screen"/>
+  &nbsp;
+  <img src="screenshots/05_setup_preferences.jpeg" width="210" alt="Preferences setup screen"/>
 </p>
 
-### Home (Arabic & English)
+### Home — Arabic & English
 
 <p align="center">
-  <img src="screenshots/07_home_ar.jpg" width="200"/>
-  <img src="screenshots/06_home_en.jpg" width="200"/>
+  <img src="screenshots/07_home_ar.jpeg" width="210" alt="Arabic home screen"/>
+  &nbsp;
+  <img src="screenshots/06_home_en.jpeg" width="210" alt="English home screen"/>
 </p>
 
 ### Try-On Flow
 
 <p align="center">
-  <img src="screenshots/08_capture_garment.jpg" width="200"/>
-  <img src="screenshots/09_generating.jpg" width="200"/>
+  <img src="screenshots/08_capture_garment.jpeg" width="210" alt="Garment capture screen"/>
+  &nbsp;
+  <img src="screenshots/09_generating.jpeg" width="210" alt="AI generation screen"/>
 </p>
 
 ### History & Measurements
 
 <p align="center">
-  <img src="screenshots/10_history_empty.jpg" width="200"/>
-  <img src="screenshots/11_measurements.jpg" width="200"/>
+  <img src="screenshots/10_history_empty.jpeg" width="210" alt="Empty history screen"/>
+  &nbsp;
+  <img src="screenshots/11_measurements.jpeg" width="210" alt="Body measurements screen"/>
 </p>
 
-### Profile (Arabic & English)
+### Profile — Arabic & English
 
 <p align="center">
-  <img src="screenshots/12_profile_ar.jpg" width="200"/>
-  <img src="screenshots/13_profile_en.jpg" width="200"/>
+  <img src="screenshots/12_profile_ar.jpeg" width="210" alt="Arabic profile screen"/>
+  &nbsp;
+  <img src="screenshots/13_profile_en.jpeg" width="210" alt="English profile screen"/>
 </p>
 
 ---
 
 ## CI/CD
 
-Every push to `main` triggers a GitHub Actions pipeline that:
-1. Installs dependencies and analyzes the codebase (`flutter analyze`)
-2. Runs the test suite
-3. Builds a release APK and uploads it as a workflow artifact
+Every push or pull request targeting the `main` branch triggers the GitHub Actions workflow.
+
+```text
+Push or Pull Request
+          │
+          ▼
+Install Dependencies
+          │
+          ▼
+Verify Formatting
+          │
+          ▼
+Analyze Source Code
+          │
+          ▼
+Run Automated Tests
+          │
+          ▼
+Build Release APK
+          │
+          ▼
+Upload APK Artifact
+```
+
+The generated Android APK can be downloaded from the workflow run under the **Artifacts** section.
 
 ---
 
 ## Author
 
-**Ahmed Aljamal** — [github.com/AhmedAljamal15](https://github.com/AhmedAljamal15)
+<div align="center">
+
+### Ahmed Gad Aljamal
+
+Flutter Developer
+
+[![GitHub Profile](https://img.shields.io/badge/GitHub-Profile-181717?style=for-the-badge\&logo=github\&logoColor=white)](https://github.com/AhmedAljamal15)
+[![LookOn Repository](https://img.shields.io/badge/Project-LookOn-6F4E37?style=for-the-badge\&logo=github\&logoColor=white)](https://github.com/AhmedAljamal15/look-on-app)
+
+<br>
+
+**GitHub Profile:**
+https://github.com/AhmedAljamal15
+
+**Project Repository:**
+https://github.com/AhmedAljamal15/look-on-app
+
+</div>
+
+</div>
