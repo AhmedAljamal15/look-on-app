@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:go_router/go_router.dart';
+import 'package:virtual_tryon_app/features/history/presentation/widgets/filter_tab.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -62,14 +63,14 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                   ),
                   child: Row(
                     children: [
-                      _FilterTab(
+                      FilterTab(
                         label: context.tr('filter_all'),
                         icon: Icons.grid_view_rounded,
                         isSelected: _filter == _HistoryFilter.all,
                         onTap: () =>
                             setState(() => _filter = _HistoryFilter.all),
                       ),
-                      _FilterTab(
+                      FilterTab(
                         label: context.tr('filter_favorites'),
                         icon: Icons.favorite_rounded,
                         isSelected: _filter == _HistoryFilter.favorites,
@@ -147,51 +148,3 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   }
 }
 
-class _FilterTab extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _FilterTab({
-    required this.label,
-    required this.icon,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          decoration: BoxDecoration(
-            gradient: isSelected ? AppColors.primaryGradient : null,
-            borderRadius: BorderRadius.circular(AppRadius.pill),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                size: 16,
-                color: isSelected ? Colors.white : AppColors.textTertiary,
-              ),
-              const SizedBox(width: 6),
-              Text(
-                label,
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color:
-                          isSelected ? Colors.white : AppColors.textTertiary,
-                    ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}

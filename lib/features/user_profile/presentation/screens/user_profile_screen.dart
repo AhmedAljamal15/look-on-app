@@ -3,6 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:virtual_tryon_app/core/widgets/form_date.dart';
+import 'package:virtual_tryon_app/features/user_profile/functions/show_category_sheet.dart';
+import 'package:virtual_tryon_app/features/user_profile/functions/show_gender_sheet.dart';
+import 'package:virtual_tryon_app/features/user_profile/presentation/widgets/editable_tile.dart';
+import 'package:virtual_tryon_app/features/user_profile/presentation/widgets/language_tile.dart';
 import 'package:virtual_tryon_app/features/user_profile/presentation/widgets/profile_link_tile.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -13,7 +18,6 @@ import '../../../profile_photo/application/profile_photo_providers.dart';
 import '../../application/profile_stats_provider.dart';
 import '../widgets/stat_card.dart';
 import '../../../../core/localization/app_strings.dart';
-import '../../../../core/localization/locale_provider.dart';
 
 class UserProfileScreen extends ConsumerWidget {
   const UserProfileScreen({super.key});
@@ -81,7 +85,7 @@ class UserProfileScreen extends ConsumerWidget {
                       padding: const EdgeInsets.only(top: 4),
                       child: Text(
                         context.tr('member_since').replaceAll(
-                            '{date}', _formatDate(context, stats.memberSince!)),
+                            '{date}', formatDate(context, stats.memberSince!)),
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ).animate().fadeIn(delay: 200.ms),
@@ -144,32 +148,32 @@ class UserProfileScreen extends ConsumerWidget {
             const SizedBox(height: AppSpacing.xs),
 
 // الجنس
-_EditableTile(
-  icon: gender == 'male' ? Icons.man_rounded : Icons.woman_rounded,
-  title: context.tr('gender_label'),
-  subtitle: gender == 'male'
-      ? context.tr('gender_male')
-      : context.tr('gender_female'),
-  onTap: () => _showGenderSheet(context, ref, gender),
-).animate().fadeIn(delay: 480.ms),
+            EditableTile(
+              icon: gender == 'male' ? Icons.man_rounded : Icons.woman_rounded,
+              title: context.tr('gender_label'),
+              subtitle: gender == 'male'
+                  ? context.tr('gender_male')
+                  : context.tr('gender_female'),
+              onTap: () => showGenderSheet(context, ref, gender),
+            ).animate().fadeIn(delay: 480.ms),
 
-const SizedBox(height: AppSpacing.xs),
+            const SizedBox(height: AppSpacing.xs),
 
 // الـ category المفضلة
-_EditableTile(
-  icon: defaultCategory == 'tops'
-      ? Icons.checkroom_rounded
-      : defaultCategory == 'bottoms'
-          ? Icons.accessibility_new_rounded
-          : Icons.dry_cleaning_rounded,
-  title: context.tr('preferred_garment'),
-  subtitle: defaultCategory == 'tops'
-      ? context.tr('category_tops_full')
-      : defaultCategory == 'bottoms'
-          ? context.tr('category_bottoms_full')
-          : context.tr('category_one_pieces_full'),
-  onTap: () => _showCategorySheet(context, ref, defaultCategory),
-).animate().fadeIn(delay: 500.ms),
+            EditableTile(
+              icon: defaultCategory == 'tops'
+                  ? Icons.checkroom_rounded
+                  : defaultCategory == 'bottoms'
+                      ? Icons.accessibility_new_rounded
+                      : Icons.dry_cleaning_rounded,
+              title: context.tr('preferred_garment'),
+              subtitle: defaultCategory == 'tops'
+                  ? context.tr('category_tops_full')
+                  : defaultCategory == 'bottoms'
+                      ? context.tr('category_bottoms_full')
+                      : context.tr('category_one_pieces_full'),
+              onTap: () => showCategorySheet(context, ref, defaultCategory),
+            ).animate().fadeIn(delay: 500.ms),
 
             const SizedBox(height: AppSpacing.xs),
 
@@ -193,409 +197,12 @@ _EditableTile(
 
             const SizedBox(height: AppSpacing.xs),
 
-            _LanguageTile(),
-
-            // const SizedBox(height: AppSpacing.lg),
-
-            // // Theme toggle
-            // Container(
-            //   padding: const EdgeInsets.all(AppSpacing.md),
-            //   decoration: BoxDecoration(
-            //     color: Theme.of(context).brightness == Brightness.dark
-            //         ? AppColors.inkElevated
-            //         : AppColors.lightSurface,
-            //     borderRadius: BorderRadius.circular(AppRadius.md),
-            //     border: Border.all(color: AppColors.border),
-            //   ),
-            //   child: Row(
-            //     children: [
-            //       Container(
-            //         width: 38,
-            //         height: 38,
-            //         decoration: BoxDecoration(
-            //           color: AppColors.violet.withValues(alpha: 0.12),
-            //           borderRadius: BorderRadius.circular(AppRadius.sm),
-            //         ),
-            //         child: Icon(
-            //           themeMode == ThemeMode.dark
-            //               ? Icons.dark_mode_rounded
-            //               : Icons.light_mode_rounded,
-            //           size: 19,
-            //           color: AppColors.violetSoft,
-            //         ),
-            //       ),
-            //       const SizedBox(width: AppSpacing.md),
-            //       Expanded(
-            //         child: Text(
-            //           themeMode == ThemeMode.dark
-            //               ? 'الوضع الداكن'
-            //               : 'الوضع الفاتح',
-            //           style: Theme.of(context).textTheme.titleMedium,
-            //         ),
-            //       ),
-            //       Switch(
-            //         value: themeMode == ThemeMode.light,
-            //         onChanged: (_) =>
-            //             ref.read(themeModeProvider.notifier).toggle(),
-            //         activeColor: AppColors.violet,
-            //         inactiveThumbColor: AppColors.violetSoft,
-            //         inactiveTrackColor:
-            //             AppColors.violet.withValues(alpha: 0.2),
-            //       ),
-            //     ],
-            //   ),
-            // ).animate().fadeIn(delay: 580.ms),
+            const LanguageTile(),
           ],
         ),
       ),
     );
   }
 
-  String _formatDate(BuildContext context, DateTime date) {
-    final monthKey = 'month_${date.month}';
-    return '${context.tr(monthKey)} ${date.year}';
-  }
-}
-
-class _LanguageTile extends ConsumerWidget {
-  const _LanguageTile();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final locale = ref.watch(localeProvider);
-    final isArabic = locale.languageCode == 'ar';
-
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: AppSpacing.sm,
-      ),
-      decoration: BoxDecoration(
-        color: AppColors.inkElevated,
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 38,
-            height: 38,
-            decoration: BoxDecoration(
-              color: AppColors.violet.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(AppRadius.sm),
-            ),
-            child: const Icon(
-              Icons.language_rounded,
-              size: 19,
-              color: AppColors.violetSoft,
-            ),
-          ),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Text(
-              context.tr('language'),
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-          ),
-          GestureDetector(
-            onTap: () => ref.read(localeProvider.notifier).toggle(),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 3),
-              decoration: BoxDecoration(
-                color: AppColors.ink,
-                borderRadius: BorderRadius.circular(AppRadius.pill),
-                border: Border.all(color: AppColors.border),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _langOption(context, context.tr('language_arabic'), isArabic),
-                  _langOption(
-                      context, context.tr('language_english'), !isArabic),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _langOption(BuildContext context, String label, bool active) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: active ? AppColors.violet : Colors.transparent,
-        borderRadius: BorderRadius.circular(AppRadius.pill),
-      ),
-      child: Text(
-        label,
-        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: active ? AppColors.textPrimary : AppColors.textTertiary,
-            ),
-      ),
-    );
-  }
-}
-
-
-
-void _showGenderSheet(BuildContext context, WidgetRef ref, String current) {
-  showModalBottomSheet(
-    context: context,
-    builder: (_) => Padding(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(context.tr('select_gender_title'),
-              style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: AppSpacing.md),
-          Row(
-            children: [
-              Expanded(
-                child: _SheetOption(
-                  icon: Icons.man_rounded,
-                  label: context.tr('gender_male'),
-                  isSelected: current == 'male',
-                  onTap: () async {
-                    await ref
-                        .read(preferencesLocalSourceProvider)
-                        .save(
-                          gender: 'male',
-                          defaultCategory:
-                              ref.read(defaultCategoryProvider),
-                        );
-                    ref.read(userGenderProvider.notifier).state = 'male';
-                    if (context.mounted) Navigator.pop(context);
-                  },
-                ),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: _SheetOption(
-                  icon: Icons.woman_rounded,
-                  label: context.tr('gender_female'),
-                  isSelected: current == 'female',
-                  onTap: () async {
-                    await ref
-                        .read(preferencesLocalSourceProvider)
-                        .save(
-                          gender: 'female',
-                          defaultCategory:
-                              ref.read(defaultCategoryProvider),
-                        );
-                    ref.read(userGenderProvider.notifier).state = 'female';
-                    if (context.mounted) Navigator.pop(context);
-                  },
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.md),
-        ],
-      ),
-    ),
-  );
-}
-
-void _showCategorySheet(
-    BuildContext context, WidgetRef ref, String current) {
-  showModalBottomSheet(
-    context: context,
-    builder: (_) => Padding(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(context.tr('preferred_garment'),
-              style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: AppSpacing.md),
-          Row(
-            children: [
-              Expanded(
-                child: _SheetOption(
-                  icon: Icons.checkroom_rounded,
-                  label: context.tr('category_tops'),
-                  isSelected: current == 'tops',
-                  onTap: () async {
-                    await ref
-                        .read(preferencesLocalSourceProvider)
-                        .save(
-                          gender: ref.read(userGenderProvider),
-                          defaultCategory: 'tops',
-                        );
-                    ref.read(defaultCategoryProvider.notifier).state =
-                        'tops';
-                    if (context.mounted) Navigator.pop(context);
-                  },
-                ),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: _SheetOption(
-                  icon: Icons.accessibility_new_rounded,
-                  label: context.tr('category_bottoms'),
-                  isSelected: current == 'bottoms',
-                  onTap: () async {
-                    await ref
-                        .read(preferencesLocalSourceProvider)
-                        .save(
-                          gender: ref.read(userGenderProvider),
-                          defaultCategory: 'bottoms',
-                        );
-                    ref.read(defaultCategoryProvider.notifier).state =
-                        'bottoms';
-                    if (context.mounted) Navigator.pop(context);
-                  },
-                ),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: _SheetOption(
-                  icon: Icons.dry_cleaning_rounded,
-                  label: context.tr('category_one_pieces'),
-                  isSelected: current == 'one-pieces',
-                  onTap: () async {
-                    await ref
-                        .read(preferencesLocalSourceProvider)
-                        .save(
-                          gender: ref.read(userGenderProvider),
-                          defaultCategory: 'one-pieces',
-                        );
-                    ref.read(defaultCategoryProvider.notifier).state =
-                        'one-pieces';
-                    if (context.mounted) Navigator.pop(context);
-                  },
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.md),
-        ],
-      ),
-    ),
-  );
-}
-
-
-class _EditableTile extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
-
-  const _EditableTile({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: AppColors.inkElevated,
-      borderRadius: BorderRadius.circular(AppRadius.md),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md,
-            vertical: AppSpacing.md,
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 38,
-                height: 38,
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(AppRadius.sm),
-                ),
-                child: Icon(icon, size: 19, color: AppColors.primarySoft),
-              ),
-              const SizedBox(width: AppSpacing.md),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title,
-                        style: Theme.of(context).textTheme.titleMedium),
-                    Text(subtitle,
-                        style: Theme.of(context).textTheme.bodySmall),
-                  ],
-                ),
-              ),
-              const Icon(Icons.edit_rounded,
-                  size: 16, color: AppColors.textTertiary),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _SheetOption extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _SheetOption({
-    required this.icon,
-    required this.label,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-        decoration: BoxDecoration(
-          gradient: isSelected ? AppColors.primaryGradient : null,
-          color: isSelected ? null : AppColors.inkElevatedHigh,
-          borderRadius: BorderRadius.circular(AppRadius.md),
-          border: Border.all(
-            color: isSelected ? Colors.transparent : AppColors.border,
-          ),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.3),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ]
-              : null,
-        ),
-        child: Column(
-          children: [
-            Icon(
-              icon,
-              size: 26,
-              color: isSelected ? Colors.white : AppColors.textTertiary,
-            ),
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              label,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color:
-                        isSelected ? Colors.white : AppColors.textPrimary,
-                  ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+ 
 }
