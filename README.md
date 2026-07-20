@@ -1,171 +1,241 @@
-# FitSnap — تطبيق تجربة الملابس بالـ AI
+<div align="center">
 
-تطبيق Flutter كامل: المستخدم يصوّر أي قميص في أي محل، والـ AI بيوريله شكله عليه فورًا — من غير ما يدخل غرفة القياس.
+# LookOn
+
+### AI-Powered Virtual Try-On
+
+Take a photo of any garment and instantly visualize how it looks on you — without entering a fitting room.
+
+<br>
+
+[![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?style=flat-square\&logo=flutter\&logoColor=white)](https://flutter.dev)
+[![Dart](https://img.shields.io/badge/Dart-3.x-0175C2?style=flat-square\&logo=dart\&logoColor=white)](https://dart.dev)
+[![Firebase](https://img.shields.io/badge/Firebase-Backend-FFCA28?style=flat-square\&logo=firebase\&logoColor=black)](https://firebase.google.com)
+[![Riverpod](https://img.shields.io/badge/State-Riverpod-6B57FF?style=flat-square)](https://riverpod.dev)
+[![GitHub Actions](https://img.shields.io/badge/CI%2FCD-GitHub_Actions-2088FF?style=flat-square\&logo=githubactions\&logoColor=white)](https://github.com/features/actions)
+
+<br>
+
+<p>
+  <img src="screenshots/01_splash.jpeg" width="210" alt="LookOn splash screen"/>
+  &nbsp;
+  <img src="screenshots/06_home_en.jpeg" width="210" alt="LookOn English home screen"/>
+  &nbsp;
+  <img src="screenshots/08_capture_garment.jpeg" width="210" alt="LookOn garment capture screen"/>
+</p>
+
+<br>
+
+**Capture. Generate. Try it on virtually.**
+
+</div>
 
 ---
 
-## 📁 هيكلة المشروع
+## What It Does
 
-```
+LookOn transforms the in-store clothing experience into a fast virtual try-on workflow.
+
+1. The user captures a one-time profile photo.
+2. The user photographs a garment, including tops, bottoms, dresses, or full-body pieces.
+3. AI generates a realistic result showing the user wearing the selected garment.
+4. The generated image is saved and can be revisited, favorited, or shared.
+
+---
+
+## Features
+
+| Feature                             | Description                                                                                       |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------- |
+| **AI Virtual Try-On**               | Generates realistic clothing previews using FASHN.ai through fal.ai.                              |
+| **Multiple Garment Categories**     | Supports tops, bottoms, dresses, jumpsuits, and other full-body garments.                         |
+| **Automatic Language Detection**    | Opens in Arabic when the device language is Arabic and in English otherwise.                      |
+| **Arabic and English Localization** | Complete RTL and LTR support across the entire application.                                       |
+| **One-Time Onboarding**             | Saves language, gender, and garment preferences for future sessions.                              |
+| **Favorites and History**           | Stores generated results and allows users to mark preferred items as favorites.                   |
+| **Optional Measurements**           | Supports height, weight, chest, waist, shoulder width, and preferred clothing size.               |
+| **Daily Usage Limits**              | Controls AI generation usage per user to manage service costs.                                    |
+| **Offline Detection**               | Displays a global real-time banner whenever the internet connection is lost.                      |
+| **Custom Design System**            | Uses a Coffee Cream identity with gradients, shimmer effects, animations, and micro-interactions. |
+| **Consent-First Experience**        | Requires explicit terms and privacy acceptance before storing user photos.                        |
+
+---
+
+## Tech Stack
+
+| Layer                | Technology                            |
+| -------------------- | ------------------------------------- |
+| **Framework**        | Flutter and Dart                      |
+| **State Management** | Riverpod                              |
+| **Backend**          | Firebase                              |
+| **Authentication**   | Firebase Anonymous Authentication     |
+| **Database**         | Cloud Firestore                       |
+| **Image Storage**    | Supabase Storage                      |
+| **AI Provider**      | FASHN.ai through fal.ai               |
+| **Routing**          | go_router                             |
+| **Localization**     | Custom Arabic and English i18n system |
+| **CI/CD**            | GitHub Actions                        |
+
+---
+
+## Architecture
+
+LookOn follows a **feature-first Clean Architecture** approach.
+
+Each feature is isolated and organized into presentation, application, data, and domain layers. Shared infrastructure is placed inside the `core` directory.
+
+```text
 lib/
-├── core/                          # كل حاجة مشتركة بين الفيتشرز
-│   ├── constants/                 # ثوابت التطبيق (أسماء collections, limits...)
-│   ├── errors/                    # Failure (للـ UI) + Exception (للـ data layer)
-│   ├── providers/                 # DI الأساسي (auth/storage/AI services)
-│   ├── router/                    # go_router + منطق الـ redirect
-│   ├── services/                  # Auth, Storage, AI, Image (Firebase wrappers)
-│   ├── theme/                     # ألوان، خطوط، spacing، الـ ThemeData كامل
-│   └── widgets/                   # عناصر UI مشتركة (أزرار، error/empty states)
+├── core/
+│   ├── constants/
+│   ├── errors/
+│   ├── localization/
+│   ├── providers/
+│   ├── router/
+│   ├── services/
+│   ├── theme/
+│   └── widgets/
 │
 ├── features/
-│   ├── onboarding/                # شاشات التعريف بالتطبيق (3 صفحات)
-│   ├── home/                      # الشاشة الرئيسية
-│   ├── profile_photo/             # تصوير وحفظ صورة المستخدم (مرة واحدة)
-│   ├── try_on/                    # تصوير القميص + شاشة "بنركّب عليك"
-│   ├── result/                    # عرض نتيجة الـ AI
-│   ├── history/                   # كل المحاولات السابقة
-│   └── settings/                  # الإعدادات
+│   ├── onboarding/
+│   ├── home/
+│   ├── profile_photo/
+│   ├── try_on/
+│   ├── result/
+│   ├── history/
+│   ├── measurements/
+│   ├── user_profile/
+│   └── preferences/
 │
-└── main.dart                      # نقطة الدخول
-
-functions/                         # Firebase Cloud Functions (TypeScript)
-└── src/index.ts                   # الدالة اللي بتكلم fal.ai (AI try-on)
+└── main.dart
 ```
 
-كل فيتشر مقسّم لـ `presentation` (شاشات + widgets) / `application` (Riverpod providers) / `data` (repositories) / `domain` (الـ models) — مفصولين عشان لو غيرت الـ backend أو الـ AI provider بكرة، مش هتلمس شاشة واحدة.
+### Feature Structure
+
+```text
+feature/
+├── presentation/
+│   ├── screens/
+│   └── widgets/
+│
+├── application/
+│   ├── providers/
+│   └── notifiers/
+│
+├── data/
+│   ├── repositories/
+│   └── data_sources/
+│
+└── domain/
+    ├── models/
+    ├── entities/
+    └── enums/
+```
+
+| Layer           | Responsibility                                       |
+| --------------- | ---------------------------------------------------- |
+| `presentation/` | Screens, reusable widgets, and user interface logic  |
+| `application/`  | Riverpod providers, notifiers, and business logic    |
+| `data/`         | Repository implementations and external data sources |
+| `domain/`       | Models, entities, enums, and repository contracts    |
 
 ---
 
-## 🧠 إزاي شغال الـ AI Try-On (المعمارية اللي اتفقنا عليها)
+## Screenshots
 
-```
-المستخدم يصوّر القميص
-        │
-        ▼
-  رفع الصورة على Firebase Storage
-        │
-        ▼
-  استدعاء Cloud Function (generateTryOn)
-        │
-        ▼
-  الـ Function بتكلم fal.ai (موديل IDM-VTON)
-        │
-        ▼
-  ترجع رابط الصورة الناتجة
-        │
-        ▼
-  تتسجل في Firestore (history) وتتعرض للمستخدم
-```
+### Onboarding & Setup
 
-**ليه الـ Cloud Function في النص ومش الـ app بيكلم fal.ai على طول؟**
-عشان API key بتاع fal.ai متسربش جوه التطبيق نفسه (أي حد يقدر يفك الـ APK ويلاقيه). الـ Function هي المكان الوحيد اللي فيه المفتاح.
+<p align="center">
+  <img src="screenshots/02_onboarding_ar.jpeg" width="210" alt="Arabic onboarding screen"/>
+  &nbsp;
+  <img src="screenshots/04_language_select.jpeg" width="210" alt="Language selection screen"/>
+  &nbsp;
+  <img src="screenshots/05_setup_preferences.jpeg" width="210" alt="Preferences setup screen"/>
+</p>
 
----
+### Home — Arabic & English
 
-## ⚙️ خطوات التشغيل
+<p align="center">
+  <img src="screenshots/07_home_ar.jpeg" width="210" alt="Arabic home screen"/>
+  &nbsp;
+  <img src="screenshots/06_home_en.jpeg" width="210" alt="English home screen"/>
+</p>
 
-### 1. تثبيت الـ dependencies
+### Try-On Flow
 
-```bash
-flutter pub get
-```
+<p align="center">
+  <img src="screenshots/08_capture_garment.jpeg" width="210" alt="Garment capture screen"/>
+  &nbsp;
+  <img src="screenshots/09_generating.jpeg" width="210" alt="AI generation screen"/>
+</p>
 
-### 2. ربط Firebase
+### History & Measurements
 
-```bash
-# لو مش متثبت
-dart pub global activate flutterfire_cli
+<p align="center">
+  <img src="screenshots/10_history_empty.jpeg" width="210" alt="Empty history screen"/>
+  &nbsp;
+  <img src="screenshots/11_measurements.jpeg" width="210" alt="Body measurements screen"/>
+</p>
 
-# من جوه فولدر المشروع
-flutterfire configure
-```
+### Profile — Arabic & English
 
-ده هيعمل ملف `lib/firebase_options.dart` تلقائي. بعدها رجّع السطرين دول في `lib/main.dart`:
-
-```dart
-import 'firebase_options.dart';
-import 'package:firebase_core/firebase_core.dart';
-// ...
-await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-```
-
-في Firebase Console، فعّل:
-- **Authentication → Sign-in method → Anonymous** ✅ (هو ده أساس فكرة "بدون تسجيل دخول")
-- **Firestore Database** (Production mode)
-- **Storage**
-
-### 3. نشر الـ Firestore/Storage rules
-
-```bash
-firebase deploy --only firestore:rules,storage
-```
-
-### 4. إعداد الـ AI (fal.ai)
-
-1. اعمل حساب على [fal.ai](https://fal.ai) واخد API key.
-2. سجّله كـ secret في Firebase:
-
-```bash
-firebase functions:secrets:set FAL_KEY
-```
-
-3. ابني وانشر الـ function:
-
-```bash
-cd functions
-npm install
-npm run build
-firebase deploy --only functions
-```
-
-### 5. شغّل التطبيق
-
-```bash
-flutter run
-```
+<p align="center">
+  <img src="screenshots/12_profile_ar.jpeg" width="210" alt="Arabic profile screen"/>
+  &nbsp;
+  <img src="screenshots/13_profile_en.jpeg" width="210" alt="English profile screen"/>
+</p>
 
 ---
 
-## 🎨 الهوية البصرية
+## CI/CD
 
-اخترت هوية مش الألوان التقليدية لتطبيقات التسوق (أزرق/بنفسجي مكرر). الفكرة: خلفية **ink** غامقة (زي مراية غرفة قياس بالليل) + لون **coral/terracotta** كأكسنت (بيوحي بخيط الحياكة وشريط القياس). الخط: **Poppins** للعناوين (واثق وهندسي) + **Inter** للنصوص (وضوح عالي).
+Every push or pull request targeting the `main` branch triggers the GitHub Actions workflow.
 
-كل التوكنز (الألوان، الـ spacing، الـ radius) مركزّة في `lib/core/theme/` — تقدر تغيّر اللون الأساسي من مكان واحد (`app_colors.dart`) وهيتغيّر في التطبيق كله.
-
----
-
-## 🧩 إزاي الـ State Management شغال (Riverpod)
-
-- **Services** (`core/services`): wrappers حول Firebase SDKs، مفيهاش state.
-- **Repositories** (`*/data`): بترجع `Either<Failure, T>` (مكتبة `fpdart`) بدل ما ترمي exceptions — يعني أي شاشة لازم تتعامل مع الخطأ بشكل صريح، مفيش مفاجآت.
-- **Notifiers** (`*/application`): `AsyncNotifier` بيدير حالة التحميل/الخطأ/النجاح لكل action (حفظ صورة، توليد try-on...).
-- **Streams** زي `activeProfilePhotoProvider` و`historyProvider` بيفضلوا "حيين" (مش `autoDispose`) عشان الداتا متتقرأش من جديد كل ما تنقل بين الشاشات.
-
-مثال على flow كامل:
+```text
+Push or Pull Request
+          │
+          ▼
+Install Dependencies
+          │
+          ▼
+Verify Formatting
+          │
+          ▼
+Analyze Source Code
+          │
+          ▼
+Run Automated Tests
+          │
+          ▼
+Build Release APK
+          │
+          ▼
+Upload APK Artifact
 ```
-الشاشة تستدعي ref.read(tryOnGenerationProvider.notifier).generate(file)
-        → الـ Notifier يحول الـ state لـ Loading
-        → يكلم TryOnRepository
-        → الـ Repository يرفع الصورة + يكلم Cloud Function + يحفظ في Firestore
-        → يرجع Either<Failure, TryOnResult>
-        → الـ Notifier يحول الـ state لـ Data أو Error
-        → الشاشة تستجيب تلقائيًا (تنقل لشاشة النتيجة أو تعرض رسالة خطأ)
-```
+
+The generated Android APK can be downloaded from the workflow run under the **Artifacts** section.
 
 ---
 
-## 📝 حاجات لسه ناقصة عشان الإنتاج (Production checklist)
+## Author
 
-- [ ] أيقونة التطبيق + splash screen أصلية (دلوقتي بسيطة بـ Icon)
-- [ ] صور/Lottie حقيقية بدل الـ placeholders في `assets/`
-- [ ] اختبار حقيقي لجودة موديل fal.ai على صور محلات مختلفة (إضاءة، خلفيات)
-- [ ] Rate limiting على الـ Cloud Function (منع استخدام مفرط)
-- [ ] صفحة "الشروط والأحكام" + توضيح إن الصور بتتحفظ على Firebase
-- [ ] اختبار على أجهزة iOS فعلية (خصوصًا الكاميرا والصلاحيات)
-- [ ] لو حبيت تربط حساب حقيقي اختياريًا بعدين: أضف Google/Apple Sign-In كـ "ترقية" فوق الـ anonymous auth الحالي (Firebase بيدعم `linkWithCredential` للحفاظ على نفس الـ UID والداتا)
+<div align="center">
 
----
+### Ahmed Gad Aljamal
 
-## 💰 ملاحظة على التكلفة
+Flutter Developer
 
-كل صورة try-on = استدعاء واحد لموديل fal.ai (مدفوع بالاستخدام). راجع التسعير الحالي على fal.ai قبل الإطلاق وفكر في حد أقصى يومي لكل مستخدم لو حبيت تتحكم في التكلفة.
+[![GitHub Profile](https://img.shields.io/badge/GitHub-Profile-181717?style=for-the-badge\&logo=github\&logoColor=white)](https://github.com/AhmedAljamal15)
+[![LookOn Repository](https://img.shields.io/badge/Project-LookOn-6F4E37?style=for-the-badge\&logo=github\&logoColor=white)](https://github.com/AhmedAljamal15/look-on-app)
+
+<br>
+
+**GitHub Profile:**
+https://github.com/AhmedAljamal15
+
+**Project Repository:**
+https://github.com/AhmedAljamal15/look-on-app
+
+</div>
+
+</div>
